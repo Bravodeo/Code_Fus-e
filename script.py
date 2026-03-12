@@ -5,15 +5,16 @@ def simulate_water_rocket(
 
     volume_bottle=1.5e-3,
     mass_dry = 0.256, # Masse fusée
-    mass_water_init = 0.5, # Masse d'eau initial
-    p_air_init = 5.0 * 101325.0, # Pression initial
+    mass_water_init = 0.6, # Masse d'eau initial
+    p_air_init = 5.0 * 100000.0, # Pression initial
     p_atm = 101325.0, # Pression athmosphèrique
     gamma = 1.4, #Constante adiabatique
-    Ae = 1e-4, #Air tuyère
+    Ae = 9e-5, #Air tuyère
     rho_water = 1000.0, #Masse volumique de l'eau
     Cd = 0.5, #Coefficient de traînée
     A_cross = 0.01, # Air en contact avec l'air
     rho_air = 1.225, #Masse volumique de l'air
+    C_discharge = 0.8, # Coefficient de décharge (à modifier selon ta tuyère)
     v0 = 0.0, #vitesse intial
     h0 = 0.0, #Hauteur initial
     dt = 1e-4, #Pas de temps
@@ -54,14 +55,16 @@ def simulate_water_rocket(
             else:
                 v_e = math.sqrt(2.0 * delta_p / rho_water)
 
-            dm_w_dt = - rho_water * Ae * v_e
+            # Application du coefficient de décharge ici
+            dm_w_dt = - rho_water * (C_discharge * Ae) * v_e
             dm_w = dm_w_dt * dt
 
             if (m_w + dm_w) < 0:
                 dm_w = -m_w
                 dm_w_dt = dm_w / dt
 
-            thrust = rho_water * Ae * (v_e ** 2)
+            # Application du coefficient de décharge ici
+            thrust = rho_water * (C_discharge * Ae) * (v_e ** 2)
             m_w = m_w + dm_w
             m = mass_dry + m_w
         else:
@@ -145,4 +148,3 @@ plt.ylabel("Hauteur (m)")
 plt.title("Hauteur en fonction du temps - Fusée à eau")
 plt.grid(True)
 plt.show()
-
